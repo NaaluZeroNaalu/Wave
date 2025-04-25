@@ -3,7 +3,7 @@ import pandas as pd
 import requests
 import json
 import io
-
+import re
 
 WATSONX_API_URL = "https://us-south.ml.cloud.ibm.com/ml/v1/text/generation?version=2023-05-29"
 MODEL_ID = "meta-llama/llama-3-2-90b-vision-instruct"
@@ -109,6 +109,7 @@ def structure4567(file):
                     "Finishing":"0%"
                 })
                 count = count + 1
+                datas.sort(key=lambda x: int(re.search(r'\d+', x["Tower Name"]).group()))
     except Exception as e:
         st.write(f"Error processing file: {e}")
     # st.write(datas)
