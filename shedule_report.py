@@ -6,6 +6,7 @@ import openpyxl
 import time
 import math
 from io import BytesIO
+from datetime import datetime
 import io
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Font, Alignment
@@ -95,7 +96,7 @@ Return only the JSON object, no code, no explanation, just the formatted JSON, a
 #         df.to_excel(writer, index=True, sheet_name='Activity Counts')
 #     return output.getvalue()
 
-def to_excel(df, year):
+def to_excel(df, year, towername):
     output = BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         # Write DataFrame starting from row 2 (Excel row 2, 1-based)
@@ -106,7 +107,7 @@ def to_excel(df, year):
         worksheet = workbook['Activity Counts']
         
         # Define the title
-        title = f"Activity Counts Report:({year})"
+        title = f"Activity Counts For {towername} Report:({year})"
         
         # Calculate the number of columns (index + DataFrame columns)
         total_columns = len(df.columns) + 1  # +1 for index column
@@ -148,30 +149,60 @@ def getTotal(ai_data):
 def process_file(file_stream):
     workbook = openpyxl.load_workbook(file_stream)
     
-    if "M7 T5" in workbook.sheetnames:
-        df = pd.read_excel(file_stream, sheet_name="M7 T5", header=1)
-        target_columns = ["Module", "Floor", "Flat", "Activity ID", "Activity Name", "Start ()", "Finish ()"]
-        existing_columns = [col for col in target_columns if col in df.columns]
-
-        activity_col_idx = df.columns.get_loc("Activity Name") + 1
-
-        non_bold_indices = []
-        for i, row in enumerate(workbook["M7 T5"].iter_rows(min_row=3, max_row=workbook["M7 T5"].max_row), start=0):
-            cell = row[activity_col_idx - 1]
-            if not (cell.font and cell.font.bold):
-                non_bold_indices.append(i)
-
-        df_non_bold = df.iloc[non_bold_indices]
-        df_selected = df_non_bold[existing_columns]
-
-        # Convert 'Finish ()' column to datetime
-        df_selected['Finish ()'] = pd.to_datetime(df_selected['Finish ()'], errors='coerce')
-
-        # Extract Month Name and Year
-        df_selected['Finish Month'] = df_selected['Finish ()'].dt.strftime('%b')
-        df_selected['Finish Year'] = df_selected['Finish ()'].dt.year
-
-        return df_selected
+    # for i in workbook.sheetnames:
+    #     st.write(i)
+    if "TOWER 5 FINISHING." in workbook.sheetnames:
+        sheet_name = "TOWER 5 FINISHING."
+        
+        # Read the data from row 16 onwards by using skiprows=16
+        df = pd.read_excel(file_stream, sheet_name=sheet_name, header=1, skiprows=5)
+        
+        # Assign column names based on document structure
+        expected_columns = [
+            'Module', 'Floor', 'Flat', 'Domain', 'Activity ID', 'Activity Name', 
+            'Monthly Look Ahead', 'Baseline Duration', 'Baseline Start', 'Baseline Finish', 
+            'Actual Start', 'Actual Finish', '% Complete', 'Start', 'Finish', 'Delay Reasons'
+        ]
+        
+        if len(df.columns) >= len(expected_columns):
+            df.columns = expected_columns[:len(df.columns)]
+        else:
+            st.error("Excel file has fewer columns than expected.")
+            return None
+        
+        # Select desired columns
+        target_columns = ["Module", "Floor", "Flat", "Activity ID", "Activity Name", "Start", "Finish"]
+        df = df[target_columns]
+        
+        # Define the column index for 'Activity Name' (0-based index, column F = index 5)
+        activity_col_idx = 5
+        
+        # Get row indices where Activity Name is not bold (adjusting for the 16-row skip)
+        non_bold_rows = [
+            row_idx for row_idx, row in enumerate(workbook[sheet_name].iter_rows(min_row=17, max_col=16), start=17)
+            if row[activity_col_idx].font is None or not row[activity_col_idx].font.b
+        ]
+        
+        # Adjust for skipped rows to match DataFrame index
+        non_bold_rows = [idx - 13 for idx in non_bold_rows]
+        
+        max_index = len(df) - 1
+        non_bold_rows = [idx for idx in non_bold_rows if 0 <= idx <= max_index]
+        
+        # Extract rows where Activity Name is not bold
+        if non_bold_rows:
+            df_non_bold = df.iloc[non_bold_rows]
+        else:
+            df_non_bold = pd.DataFrame(columns=df.columns)
+        
+        # Convert 'Finish' column to datetime
+        df_non_bold['Finish'] = pd.to_datetime(df_non_bold['Finish'], errors='coerce')
+        
+        # Extract month and year from the 'Finish' column
+        df_non_bold['Finish Month'] = df_non_bold['Finish'].dt.strftime('%b')
+        df_non_bold['Finish Year'] = df_non_bold['Finish'].dt.year
+        
+        return df_non_bold, "Tower 5"
     
     elif "TOWER 4 FINISHING." in workbook.sheetnames:
         sheet_name = "TOWER 4 FINISHING."
@@ -216,7 +247,7 @@ def process_file(file_stream):
         df_non_bold['Finish Month'] = df_non_bold['Finish'].dt.strftime('%b')
         df_non_bold['Finish Year'] = df_non_bold['Finish'].dt.year
         
-        return df_non_bold
+        return df_non_bold, "Tower 4"
     
     else:
         return None
@@ -227,6 +258,8 @@ st.title("Excel File Activity Processor")
 # Initialize session state
 if 'df_selected' not in st.session_state:
     st.session_state.df_selected = None
+if 'tname' not in st.session_state:
+    st.session_state.tname = None
 if 'selected_file' not in st.session_state:
     st.session_state.selected_file = None
 
@@ -239,16 +272,17 @@ selected_file = st.sidebar.selectbox("Choose a file from IBM COS:", files, key="
 if selected_file and selected_file != st.session_state.selected_file:
     st.session_state.selected_file = selected_file
     response = st.session_state.cos_client.get_object(Bucket="projectreportnew", Key=selected_file)
-    st.session_state.df_selected = process_file(io.BytesIO(response['Body'].read()))
+    st.session_state.df_selected, st.session_state.tname = process_file(io.BytesIO(response['Body'].read()))
 
 # Work with the stored DataFrame
 df_selected = st.session_state.df_selected
+tname = st.session_state.tname
 
 if df_selected is None:
     st.write("No valid data found in the selected file. Ensure the file contains 'M7 T5' or 'TOWER 4 FINISHING.' sheet.")
 else:
     st.write("Processed Data:")
-    st.write(df_selected)
+    st.write(df_selected)   
 
     # Get unique years and months for filters
     unique_years = sorted(df_selected['Finish Year'].dropna().unique().astype(int))
@@ -266,7 +300,11 @@ else:
     ]
 
     st.subheader(f"Filtered Data for {', '.join(selected_months)} {selected_year}")
-    st.write(filtered_data.head(20))
+    st.write(filtered_data)
+
+    #cross check
+    count_running = filtered_data[filtered_data['Activity Name'] == 'Balconies Waterproofing'].shape[0]
+    st.write(count_running)
 
     if st.button("Display Activity Count by Month"):
         # Get only necessary columns for activity and month
@@ -295,7 +333,8 @@ else:
         st.write("Activity Count by Month:")
         st.write(count_table)
         st.session_state.sheduledf = count_table
-        st.session_state.shedule = to_excel(count_table, selected_year)
+        current_date = datetime.now().date()
+        st.session_state.shedule = to_excel(count_table, current_date, tname)
         st.download_button(
             label="📥 Download Excel Report",
             data=st.session_state.shedule,
