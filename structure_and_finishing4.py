@@ -109,7 +109,7 @@ def structure4567(file):
                     "Finishing":"0%"
                 })
                 count = count + 1
-                datas.sort(key=lambda x: int(re.search(r'\d+', x["Tower Name"]).group()))
+                # datas.sort(key=lambda x: int(re.search(r'\d+', x["Tower Name"]).group()))
     except Exception as e:
         st.write(f"Error processing file: {e}")
     # st.write(datas)
