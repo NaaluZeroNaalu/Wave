@@ -1,0 +1,5 @@
+openpyxl
+bs4
+dotenv
+XlsxWriter
+ibm_cos_sdk
