@@ -62,74 +62,74 @@ averagedf = None
 averagedf2 = None
 averagedf3 = None
 
-# def update_finishing_value(df):
-#     for i, row in df.iterrows():
-#         if row["Tower Name"] == "T4" and row["Project"] == "Veridia":
-            
-#             finishing_value = df[(df["Tower Name"] == "Tower 4 Finishing") & (df["Project"] == "Veridia")]["Finishing"].values
-#             if finishing_value:
-#                 df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower 4' row with the 'Finishing' value
-
-#     for i, row in df.iterrows():
-#         if row["Tower Name"] == "T5" and row["Project"] == "Veridia":
-            
-#             finishing_value = df[(df["Tower Name"] == "Tower 5 Finishing") & (df["Project"] == "Veridia")]["Finishing"].values
-#             if finishing_value:
-#                 df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower 4' row with the 'Finishing' value
-
-#     for i, row in df.iterrows():
-#         if row["Tower Name"] == "T(G)" and row["Project"] == "Eligo":
-           
-#             finishing_value = df[(df["Tower Name"] == "Tower G Finishing") & (df["Project"] == "Eligo")]["Finishing"].values
-#             if finishing_value:
-#                 df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower 4' row with the 'Finishing' value
-
-#     for i, row in df.iterrows():
-#         if row["Tower Name"] == "T(H)" and row["Project"] == "Eligo":
-#             # Find the corresponding "Tower 4 Finishing" row and get the 'Finishing' value
-#             finishing_value = df[(df["Tower Name"] == "Tower H Finishing") & (df["Project"] == "Eligo")]["Finishing"].values
-#             if finishing_value:
-#                 df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower 4' row with the 'Finishing' value
-
-#     # Optionally remove the separate "Tower 4 Finishing" row
-#     df = df[df["Tower Name"] != "Tower 4 Finishing"]
-#     df = df[df["Tower Name"] != "Tower 5 Finishing"]
-#     df = df[df["Tower Name"] != "Tower G Finishing"]
-#     df = df[df["Tower Name"] != "Tower H Finishing"]
-#     return df
-
 def update_finishing_value(df):
     for i, row in df.iterrows():
         if row["Tower Name"] == "T4" and row["Project"] == "Veridia":
+            
             finishing_value = df[(df["Tower Name"] == "Tower 4 Finishing") & (df["Project"] == "Veridia")]["Finishing"].values
-            if len(finishing_value) > 0:  # Check if array is non-empty
+            if finishing_value:
                 df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower 4' row with the 'Finishing' value
 
     for i, row in df.iterrows():
         if row["Tower Name"] == "T5" and row["Project"] == "Veridia":
+            
             finishing_value = df[(df["Tower Name"] == "Tower 5 Finishing") & (df["Project"] == "Veridia")]["Finishing"].values
-            if len(finishing_value) > 0:  # Check if array is non-empty
-                df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower 5' row with the 'Finishing' value
+            if finishing_value:
+                df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower 4' row with the 'Finishing' value
 
     for i, row in df.iterrows():
         if row["Tower Name"] == "T(G)" and row["Project"] == "Eligo":
+           
             finishing_value = df[(df["Tower Name"] == "Tower G Finishing") & (df["Project"] == "Eligo")]["Finishing"].values
-            if len(finishing_value) > 0:  # Check if array is non-empty
-                df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower G' row with the 'Finishing' value
+            if finishing_value:
+                df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower 4' row with the 'Finishing' value
 
     for i, row in df.iterrows():
         if row["Tower Name"] == "T(H)" and row["Project"] == "Eligo":
+            # Find the corresponding "Tower 4 Finishing" row and get the 'Finishing' value
             finishing_value = df[(df["Tower Name"] == "Tower H Finishing") & (df["Project"] == "Eligo")]["Finishing"].values
-            if len(finishing_value) > 0:  # Check if array is non-empty
-                df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower H' row with the 'Finishing' value
+            if finishing_value:
+                df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower 4' row with the 'Finishing' value
 
     # Optionally remove the separate "Tower 4 Finishing" row
     df = df[df["Tower Name"] != "Tower 4 Finishing"]
     df = df[df["Tower Name"] != "Tower 5 Finishing"]
     df = df[df["Tower Name"] != "Tower G Finishing"]
     df = df[df["Tower Name"] != "Tower H Finishing"]
-    
     return df
+
+# def update_finishing_value(df):
+#     for i, row in df.iterrows():
+#         if row["Tower Name"] == "T4" and row["Project"] == "Veridia":
+#             finishing_value = df[(df["Tower Name"] == "Tower 4 Finishing") & (df["Project"] == "Veridia")]["Finishing"].values
+#             if len(finishing_value) > 0:  # Check if array is non-empty
+#                 df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower 4' row with the 'Finishing' value
+
+#     for i, row in df.iterrows():
+#         if row["Tower Name"] == "T5" and row["Project"] == "Veridia":
+#             finishing_value = df[(df["Tower Name"] == "Tower 5 Finishing") & (df["Project"] == "Veridia")]["Finishing"].values
+#             if len(finishing_value) > 0:  # Check if array is non-empty
+#                 df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower 5' row with the 'Finishing' value
+
+#     for i, row in df.iterrows():
+#         if row["Tower Name"] == "T(G)" and row["Project"] == "Eligo":
+#             finishing_value = df[(df["Tower Name"] == "Tower G Finishing") & (df["Project"] == "Eligo")]["Finishing"].values
+#             if len(finishing_value) > 0:  # Check if array is non-empty
+#                 df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower G' row with the 'Finishing' value
+
+#     for i, row in df.iterrows():
+#         if row["Tower Name"] == "T(H)" and row["Project"] == "Eligo":
+#             finishing_value = df[(df["Tower Name"] == "Tower H Finishing") & (df["Project"] == "Eligo")]["Finishing"].values
+#             if len(finishing_value) > 0:  # Check if array is non-empty
+#                 df.at[i, "Finishing"] = finishing_value[0]  # Update 'Tower H' row with the 'Finishing' value
+
+#     # Optionally remove the separate "Tower 4 Finishing" row
+#     df = df[df["Tower Name"] != "Tower 4 Finishing"]
+#     df = df[df["Tower Name"] != "Tower 5 Finishing"]
+#     df = df[df["Tower Name"] != "Tower G Finishing"]
+#     df = df[df["Tower Name"] != "Tower H Finishing"]
+    
+#     return df
 
 
 
