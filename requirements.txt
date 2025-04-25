@@ -1,5 +1,9 @@
-openpyxl
-bs4
-dotenv
-XlsxWriter
-ibm_cos_sdk
+streamlit
+requests
+urllib3
+certifi
+pandas
+beautifulsoup4
+python-dotenv
+tenacity
+xlsxwriter
