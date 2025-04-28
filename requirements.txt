@@ -6,4 +6,5 @@ pandas
 beautifulsoup4
 python-dotenv
 tenacity
+openpyxl
 xlsxwriter
