@@ -10,3 +10,4 @@ openpyxl
 xlsxwriter
 ibm-cos-sdk
 botocore
+six
