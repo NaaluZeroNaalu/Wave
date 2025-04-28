@@ -10,4 +10,4 @@ openpyxl
 xlsxwriter
 ibm-cos-sdk==2.10.0
 ibm-botocore==1.13.0
-six
+
