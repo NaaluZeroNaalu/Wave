@@ -8,6 +8,6 @@ python-dotenv
 tenacity
 openpyxl
 xlsxwriter
-ibm-cos-sdk
+ibm-cos-sdk==2.10.0
 botocore
 six
