@@ -8,3 +8,4 @@ python-dotenv
 tenacity
 openpyxl
 xlsxwriter
+ibm_boto3
