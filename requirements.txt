@@ -10,3 +10,4 @@ openpyxl
 xlsxwriter
 ibm-cos-sdk
 botocore>=1.34.0
+boto3
