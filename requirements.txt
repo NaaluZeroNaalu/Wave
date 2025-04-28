@@ -8,4 +8,5 @@ python-dotenv
 tenacity
 openpyxl
 xlsxwriter
-boto3
+ibm-cos-sdk
+botocore
