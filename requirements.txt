@@ -9,5 +9,4 @@ tenacity
 openpyxl
 xlsxwriter
 ibm-cos-sdk
-ibm-botocore
 
